@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TradingServer.Client.Common\TradingServer.Client.Common.csproj" />
+      <ProjectReference Include="..\TradingServer.Client.WebSocketWrapper\TradingServer.Client.WebSocketWrapper.csproj" />
+    </ItemGroup>
+
+</Project>

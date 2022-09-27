@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingServer", "TradingServer\TradingServer.csproj", "{9A15492C-CBE2-417F-BFA4-7AC873385D99}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TradingServer.Common", "TradingServer.Common", "{A33840DB-2C62-46CD-A0B7-E73326743A30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingServer.Common.Serilog", "TradingServer.Common.Serilog\TradingServer.Common.Serilog.csproj", "{7443BCD0-3716-491F-B641-93AC97EF8979}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TradingServer.Clients", "TradingServer.Clients", "{A73AD56C-AE40-4B6F-9FC0-7BDE8E147E57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingServer.Client.Common", "TradingServer.Client.Common\TradingServer.Client.Common.csproj", "{2403574B-E98D-4695-9E9A-833FCDBE2C21}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TradingServer.Listener", "TradingServer.Listener", "{D542AEA9-2878-437B-9C6D-B0A207E5ED35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingServer.Client.Binance", "TradingServer.Client.Binance\TradingServer.Client.Binance.csproj", "{1E0BABE7-205F-4EB7-91D8-EDC003F56707}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingServer.Common", "TradingServer.Common\TradingServer.Common.csproj", "{53DA64C4-998F-45EF-BB08-A26822740A45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingServer.Client.WebSocketWrapper", "TradingServer.Client.WebSocketWrapper\TradingServer.Client.WebSocketWrapper.csproj", "{4976C857-9C03-482F-BC54-D5821C51B63B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A15492C-CBE2-417F-BFA4-7AC873385D99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A15492C-CBE2-417F-BFA4-7AC873385D99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A15492C-CBE2-417F-BFA4-7AC873385D99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A15492C-CBE2-417F-BFA4-7AC873385D99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7443BCD0-3716-491F-B641-93AC97EF8979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7443BCD0-3716-491F-B641-93AC97EF8979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7443BCD0-3716-491F-B641-93AC97EF8979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7443BCD0-3716-491F-B641-93AC97EF8979}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2403574B-E98D-4695-9E9A-833FCDBE2C21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2403574B-E98D-4695-9E9A-833FCDBE2C21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2403574B-E98D-4695-9E9A-833FCDBE2C21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2403574B-E98D-4695-9E9A-833FCDBE2C21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E0BABE7-205F-4EB7-91D8-EDC003F56707}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E0BABE7-205F-4EB7-91D8-EDC003F56707}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E0BABE7-205F-4EB7-91D8-EDC003F56707}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E0BABE7-205F-4EB7-91D8-EDC003F56707}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DA64C4-998F-45EF-BB08-A26822740A45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DA64C4-998F-45EF-BB08-A26822740A45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DA64C4-998F-45EF-BB08-A26822740A45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DA64C4-998F-45EF-BB08-A26822740A45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4976C857-9C03-482F-BC54-D5821C51B63B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4976C857-9C03-482F-BC54-D5821C51B63B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4976C857-9C03-482F-BC54-D5821C51B63B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4976C857-9C03-482F-BC54-D5821C51B63B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7443BCD0-3716-491F-B641-93AC97EF8979} = {A33840DB-2C62-46CD-A0B7-E73326743A30}
+		{2403574B-E98D-4695-9E9A-833FCDBE2C21} = {A73AD56C-AE40-4B6F-9FC0-7BDE8E147E57}
+		{1E0BABE7-205F-4EB7-91D8-EDC003F56707} = {A73AD56C-AE40-4B6F-9FC0-7BDE8E147E57}
+		{53DA64C4-998F-45EF-BB08-A26822740A45} = {A33840DB-2C62-46CD-A0B7-E73326743A30}
+		{4976C857-9C03-482F-BC54-D5821C51B63B} = {A73AD56C-AE40-4B6F-9FC0-7BDE8E147E57}
+	EndGlobalSection
+EndGlobal
