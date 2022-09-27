@@ -5,20 +5,23 @@ namespace TradingServer.Client.Binance.Dtos;
 public class MiniTickerWebSocketEvent : WebSocketEvent
 {
     [JsonProperty(PropertyName = "c")]
-    public int ClosePrice { get; set; }
+    public decimal ClosePrice { get; set; }
     
     [JsonProperty(PropertyName = "o")]
-    public int OpenPrice { get; set; }
+    public decimal OpenPrice { get; set; }
     
     [JsonProperty(PropertyName = "h")]
-    public int HighPrice { get; set; }
+    public decimal HighPrice { get; set; }
     
     [JsonProperty(PropertyName = "l")]
-    public int LowPrice { get; set; }
+    public decimal LowPrice { get; set; }
     
     [JsonProperty(PropertyName = "v")]
-    public int TotalTradedBaseAssetVolume { get; set; }
+    public decimal TotalTradedBaseAssetVolume { get; set; }
     
     [JsonProperty(PropertyName = "q")]
-    public int TotalTradedQuoteAssetVolume { get; set; }
+    public decimal TotalTradedQuoteAssetVolume { get; set; }
+    
+    [JsonProperty(PropertyName = "E")]
+    public new long EventTime { get; set; }
 }

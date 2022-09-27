@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using TradingServer.Client.Binance.Enums;
 
 namespace TradingServer.Client.Binance.Dtos;

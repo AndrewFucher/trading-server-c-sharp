@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\TradingServer.Client.Binance\TradingServer.Client.Binance.csproj" />
       <ProjectReference Include="..\TradingServer.Common.Serilog\TradingServer.Common.Serilog.csproj" />
     </ItemGroup>
 

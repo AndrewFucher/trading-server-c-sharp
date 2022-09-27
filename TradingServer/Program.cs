@@ -12,7 +12,7 @@ builder.ConfigureAppConfiguration((context, configurationBuilder) =>
 builder.ConfigureServices(services =>
 {
     services.AddSerilog();
-    services.AddHostedServices();
+    services.AddServices();
 });
 
 var app = builder.Build();

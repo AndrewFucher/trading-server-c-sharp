@@ -1,9 +1,12 @@
 ﻿using TradingServer.Client.Binance.Dtos;
+using TradingServer.Client.Binance.Enums;
 
 namespace TradingServer.Client.Binance.Abstractions;
 
 public interface IBinanceSpotWebSocketManager
 {
+    IBinanceSpotWebSocketManager AddCallback(EventType key, Action<WebSocketEvent> value);
+    IBinanceSpotWebSocketManager RemoveCallback(EventType key, Action<WebSocketEvent> value);
     Task StartAsync();
     Task<WebSocketResponse> SendRequest(WebSocketRequest request);
     

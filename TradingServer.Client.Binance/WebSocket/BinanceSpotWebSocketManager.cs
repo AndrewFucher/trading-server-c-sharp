@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TradingServer.Client.Binance.Abstractions;
@@ -12,7 +13,7 @@ namespace TradingServer.Client.Binance.WebSocket;
 /// <inheritdoc />
 public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
 {
-    public readonly IDictionary<EventType, Action<WebSocketEvent>> Callbacks =
+    private readonly IDictionary<EventType, Action<WebSocketEvent>> _callbacks =
         new ConcurrentDictionary<EventType, Action<WebSocketEvent>>();
 
     private readonly ILogger<BinanceSpotWebSocketManager> _logger;
@@ -36,6 +37,24 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
         _binanceWebSocketWrapper = new BinanceWebSocketWrapper(logger, HandleMessageEvent);
     }
 
+    public IBinanceSpotWebSocketManager AddCallback(EventType key, Action<WebSocketEvent> value)
+    {
+        if (_callbacks.TryGetValue(key, out var action))
+            _callbacks[key] += value;
+        else
+            _callbacks.Add(key, value);
+
+        return this;
+    }
+    
+    public IBinanceSpotWebSocketManager RemoveCallback(EventType key, Action<WebSocketEvent> value)
+    {
+        if (_callbacks.ContainsKey(key))
+            _callbacks[key] -= value;
+
+        return this;
+    }
+
     public async Task StartAsync()
     {
         await _binanceWebSocketWrapper.StartAsync();
@@ -53,12 +72,12 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
             _shouldUpdateSubscriptions = true;
 
         var message = JsonConvert.SerializeObject(request, _jsonSerializerSettings);
-        _logger.LogInformation("Sending {}", message);
+        _logger.LogInformation($"Sending {message}");
         _binanceWebSocketWrapper.Send(message);
 
         while (!_webSocketResponses.ContainsKey(request.Id))
         {
-            await Task.Delay(100);
+            await Task.Delay(100).ConfigureAwait(false);
         }
 
         _webSocketResponses.Remove(request.Id, out var response);
@@ -78,9 +97,10 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
 
     public async Task<IEnumerable<string>> SubscribeToMiniTicker24Hour(IEnumerable<string> symbols)
     {
-        if (!Callbacks.ContainsKey(EventType.MiniTicker24Hour))
-            throw new NoCallbackConfiguredException($"No callback configured for Binance event type {EventType.MiniTicker24Hour}");
-        
+        if (!_callbacks.ContainsKey(EventType.MiniTicker24Hour))
+            throw new NoCallbackConfiguredException(
+                $"No callback configured for Binance event type {EventType.MiniTicker24Hour}");
+
         const string streamName = "miniTicker";
 
         var request = new WebSocketRequest
@@ -95,9 +115,10 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
 
     public async Task SubscribeToAllMiniTicker24Hour()
     {
-        if (!Callbacks.ContainsKey(EventType.MiniTicker24Hour))
-            throw new NoCallbackConfiguredException($"No callback configured for Binance event type {EventType.MiniTicker24Hour}");
-        
+        if (!_callbacks.ContainsKey(EventType.MiniTicker24Hour))
+            throw new NoCallbackConfiguredException(
+                $"No callback configured for Binance event type {EventType.MiniTicker24Hour}");
+
         const string streamName = "!miniTicker@arr";
 
         var request = new WebSocketRequest
@@ -133,13 +154,17 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
         try
         {
             if (messageEvent.Message.Contains("id"))
+            {
                 HandleWebSocketResponse(messageEvent.Message);
+            }
             else if (messageEvent.Message.Contains("\"e\""))
+            {
                 HandleWebSocketEvent(messageEvent.Message);
+            }
         }
         catch (Exception e)
         {
-            _logger.LogError("Error Message: {}, Error: {}\n{}", e.Message, e.Data, e);
+            _logger.LogError($"Error Message: {e.Message}, Error: {e.Data}\n{e.ToString()}");
         }
     }
 
@@ -159,9 +184,9 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
 
     private void HandleWebSocketMiniTickerEvent(string @event)
     {
-        if (!Callbacks.TryGetValue(EventType.MiniTicker24Hour, out var action))
+        if (!_callbacks.TryGetValue(EventType.MiniTicker24Hour, out var action) || action == null)
         {
-            _logger.LogWarning("No callback specified for event type {}", EventType.MiniTicker24Hour);
+            _logger.LogWarning($"No callback specified for event type {EventType.MiniTicker24Hour}");
             return;
         }
 

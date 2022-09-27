@@ -1,9 +1,16 @@
-﻿namespace TradingServer.Extensions;
+﻿using TradingServer.Client.Binance.Abstractions;
+using TradingServer.Client.Binance.WebSocket;
+
+namespace TradingServer.Extensions;
 
 public static class ServicesExtension
 {
-    public static IServiceCollection AddHostedServices(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddServices(this IServiceCollection serviceCollection)
     {
-        return serviceCollection.AddHostedService<Testtt>();
+        serviceCollection.AddSingleton<IBinanceSpotWebSocketManager>(
+            s => new BinanceSpotWebSocketManager(s.GetRequiredService<ILogger<BinanceSpotWebSocketManager>>())
+        );
+        serviceCollection.AddHostedService<Testtt>();
+        return serviceCollection;
     }
 }

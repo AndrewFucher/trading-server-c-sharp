@@ -68,26 +68,24 @@ public class WebSocketWrapper : IDisposable
         ConfigureListener();
 
         // Start running async sender
-        Task.Run(async () => await SendMessageFromQueue());
+        await Task.Factory.StartNew(SendMessageFromQueue, TaskCreationOptions.LongRunning);
     }
 
     protected virtual async Task SendMessageFromQueue()
     {
-        if (MessagesToSend.IsEmpty)
-            Task.Run(async () =>
+        while (true)
+        {
+            if (MessagesToSend.IsEmpty)
             {
                 await Task.Delay(5 * 1000, CancellationToken);
-                await SendMessageFromQueue();
-            });
+                continue;
+            }
 
-        if (MessagesToSend.TryDequeue(out var message))
-            await WebsocketClient.SendInstant(message);
+            if (MessagesToSend.TryDequeue(out var message))
+                await WebsocketClient.SendInstant(message);
 
-        Task.Run(async () =>
-        {
             await Task.Delay(IntervalBetweenMessagesToSendMilliseconds, CancellationToken);
-            await SendMessageFromQueue();
-        });
+        }
     }
 
     protected virtual void ConfigureListener()
