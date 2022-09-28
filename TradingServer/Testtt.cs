@@ -23,6 +23,7 @@ public class Testtt : IHostedService
         await _binanceSpotWebSocketManager.StartAsync();
         var subscriptions =
             await _binanceSpotWebSocketManager.SubscribeToMiniTicker24Hour("ethusdt", "btcusdt", "adausdt");
+        await _binanceSpotWebSocketManager.SubscribeToAllMiniTicker24Hour();
         _logger.LogInformation($"Current subscriptions for Mini Ticker 24h {string.Join(",", subscriptions)}");
     }
 
@@ -39,8 +40,8 @@ public class Testtt : IHostedService
         
         // _logger.LogInformation($"{_process.PrivateMemorySize64}");
         
-        _logger.LogInformation($"DateTime: {DateTimeOffset.FromUnixTimeMilliseconds(fullEvent.EventTime).DateTime} " +
-                               $"Symbol: {fullEvent.Symbol} " +
-                               $"Last price: {fullEvent.ClosePrice} ");
+        // _logger.LogInformation($"DateTime: {DateTimeOffset.FromUnixTimeMilliseconds(fullEvent.EventTime).DateTime} " +
+        //                        $"Symbol: {fullEvent.Symbol} " +
+        //                        $"Last price: {fullEvent.ClosePrice} ");
     }
 }

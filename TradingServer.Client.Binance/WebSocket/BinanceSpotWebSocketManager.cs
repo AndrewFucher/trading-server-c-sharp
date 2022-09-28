@@ -72,8 +72,8 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
             _shouldUpdateSubscriptions = true;
 
         var message = JsonConvert.SerializeObject(request, _jsonSerializerSettings);
-        _logger.LogInformation($"Sending {message}");
-        _binanceWebSocketWrapper.Send(message);
+        // _logger.LogInformation($"Sending {message}");
+        await _binanceWebSocketWrapper.SendAsync(message);
 
         while (!_webSocketResponses.ContainsKey(request.Id))
         {
@@ -149,17 +149,17 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
         return _subscriptions;
     }
 
-    private void HandleMessageEvent(object? sender, MessageEvent messageEvent)
+    private void HandleMessageEvent(object? sender, WebSocketMessage webSocketMessage)
     {
         try
         {
-            if (messageEvent.Message.Contains("id"))
+            if (webSocketMessage.Message.Contains("id"))
             {
-                HandleWebSocketResponse(messageEvent.Message);
+                HandleWebSocketResponse(webSocketMessage.Message);
             }
-            else if (messageEvent.Message.Contains("\"e\""))
+            else if (webSocketMessage.Message.Contains("\"e\""))
             {
-                HandleWebSocketEvent(messageEvent.Message);
+                HandleWebSocketEvent(webSocketMessage.Message);
             }
         }
         catch (Exception e)

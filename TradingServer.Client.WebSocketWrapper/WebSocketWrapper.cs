@@ -7,7 +7,7 @@ using Websocket.Client;
 
 namespace TradingServer.Client.WebSocketWrapper;
 
-public class WebSocketWrapper : IDisposable
+public class WebSocketWrapper
 {
     private readonly ILogger _logger;
     protected readonly IWebsocketClient WebsocketClient;
@@ -15,13 +15,13 @@ public class WebSocketWrapper : IDisposable
     protected readonly ConcurrentQueue<string> MessagesToSend = new();
     protected int IntervalBetweenMessagesToSendMilliseconds { get; set; }
 
-    public event EventHandler<MessageEvent> OnMessageEventHandler;
+    public event EventHandler<WebSocketMessage> OnMessageEventHandler;
 
     public WebSocketWrapper(
         ILogger logger,
         string url,
         int intervalBetweenMessagesToSendMilliseconds = 1000,
-        EventHandler<MessageEvent>? onMessage = null,
+        EventHandler<WebSocketMessage>? onMessage = null,
         int pingIntervalMinutes = 3
     )
     {
@@ -96,7 +96,7 @@ public class WebSocketWrapper : IDisposable
         WebsocketClient
             .MessageReceived
             .Subscribe(message =>
-                OnMessageEventHandler.Invoke(this, new MessageEvent {Message = message.Text})
+                OnMessageEventHandler.Invoke(this, new WebSocketMessage {Message = message.Text})
             );
     }
 

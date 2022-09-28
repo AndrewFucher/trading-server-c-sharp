@@ -3,22 +3,28 @@ using TradingServer.Client.WebSocketWrapper;
 
 namespace TradingServer.Client.Binance.WebSocket;
 
-public class BinanceWebSocketWrapper : WebSocketWrapper.WebSocketWrapper
+public class BinanceWebSocketWrapper : NativeWebSocketClientClientWrapper
 {
-    private const int INTERVAL_BETWEEN_MESSEGES_TO_SEND = 1000 / 5 + 300;
-    private const string BINANCE_WEBSOCKET_URL = "wss://stream.binance.com:9443/ws";
-
+    private const int IntervalBetweenMessagesToSendMs = 300;
+    private const string BinanceWebsocketUrl = "wss://stream.binance.com:9443/ws";
+    private event EventHandler<WebSocketMessage> OnMessage;
+    
     public BinanceWebSocketWrapper(
         ILogger logger,
-        EventHandler<MessageEvent>? onMessage = null,
-        int pingIntervalMinutes = 3)
+        EventHandler<WebSocketMessage> onMessage,
+        int pingIntervalMs = 180000)
         : base(
             logger,
-            BINANCE_WEBSOCKET_URL,
-            INTERVAL_BETWEEN_MESSEGES_TO_SEND,
-            onMessage,
-            pingIntervalMinutes
+            BinanceWebsocketUrl,
+            IntervalBetweenMessagesToSendMs,
+            pingIntervalMs
         )
     {
+        OnMessage = onMessage;
+    }
+
+    protected override void HandleWebSocketMessage(string message)
+    {
+        OnMessage.Invoke(this, new WebSocketMessage() {Message = message});
     }
 }

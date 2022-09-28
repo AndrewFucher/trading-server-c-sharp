@@ -1,6 +1,6 @@
 ﻿namespace TradingServer.Client.WebSocketWrapper;
 
-public class MessageEvent : EventArgs
+public class WebSocketMessage
 {
     public string Message { get; set; }
 }
