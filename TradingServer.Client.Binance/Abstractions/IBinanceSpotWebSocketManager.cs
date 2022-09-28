@@ -5,8 +5,8 @@ namespace TradingServer.Client.Binance.Abstractions;
 
 public interface IBinanceSpotWebSocketManager
 {
-    IBinanceSpotWebSocketManager AddCallback(EventType key, Action<WebSocketEvent> value);
-    IBinanceSpotWebSocketManager RemoveCallback(EventType key, Action<WebSocketEvent> value);
+    IBinanceSpotWebSocketManager AddCallback(EventType key, Func<WebSocketEvent, Task> value);
+    IBinanceSpotWebSocketManager RemoveCallback(EventType key, Func<WebSocketEvent, Task> value);
     Task StartAsync();
     Task<WebSocketResponse> SendRequest(WebSocketRequest request);
     

@@ -7,11 +7,11 @@ public class BinanceWebSocketWrapper : NativeWebSocketClientClientWrapper
 {
     private const int IntervalBetweenMessagesToSendMs = 300;
     private const string BinanceWebsocketUrl = "wss://stream.binance.com:9443/ws";
-    private event EventHandler<WebSocketMessage> OnMessage;
+    private Func<WebSocketMessage, Task> OnMessage;
     
     public BinanceWebSocketWrapper(
         ILogger logger,
-        EventHandler<WebSocketMessage> onMessage,
+        Func<WebSocketMessage, Task> onMessage,
         int pingIntervalMs = 180000)
         : base(
             logger,
@@ -23,8 +23,8 @@ public class BinanceWebSocketWrapper : NativeWebSocketClientClientWrapper
         OnMessage = onMessage;
     }
 
-    protected override void HandleWebSocketMessage(string message)
+    protected override async Task HandleWebSocketMessage(string message)
     {
-        OnMessage.Invoke(this, new WebSocketMessage() {Message = message});
+        await OnMessage.Invoke(new WebSocketMessage() {Message = message});
     }
 }

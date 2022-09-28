@@ -46,7 +46,7 @@ public abstract class NativeWebSocketClientClientWrapper : IWebSocketClientWrapp
             {Options = {KeepAliveInterval = TimeSpan.FromMilliseconds(pingIntervalMs)}};
     }
 
-    protected abstract void HandleWebSocketMessage(string message);
+    protected abstract Task HandleWebSocketMessage(string message);
 
     public virtual async Task StartAsync()
     {
@@ -110,7 +110,7 @@ public abstract class NativeWebSocketClientClientWrapper : IWebSocketClientWrapp
                     }
                 }
 
-                await Task.Delay(3000);
+                await Task.Delay(_messageSendingIntervalMs).ConfigureAwait(false);
             }
         }
         catch (Exception e)
@@ -126,11 +126,11 @@ public abstract class NativeWebSocketClientClientWrapper : IWebSocketClientWrapp
         {
             try
             {
-                WebSocketReceiveResult receiveResult;
                 var buffer = WebSocket.CreateClientBuffer(_bufferSize, _bufferSize);
-                string message;
                 while (_clientWebSocket.State != WebSocketState.Closed)
                 {
+                    string message;
+                    WebSocketReceiveResult receiveResult;
                     await using (var ms = new MemoryStream())
                     {
                         do
@@ -142,7 +142,7 @@ public abstract class NativeWebSocketClientClientWrapper : IWebSocketClientWrapp
                         } while (!receiveResult.EndOfMessage);
 
                         ms.Seek(0, SeekOrigin.Begin);
-                        
+
                         message = Encoding.UTF8.GetString(ms.ToArray());
                     }
 
@@ -152,8 +152,7 @@ public abstract class NativeWebSocketClientClientWrapper : IWebSocketClientWrapp
                     if (_clientWebSocket.State == WebSocketState.Open &&
                         receiveResult.MessageType != WebSocketMessageType.Close)
                     {
-
-                        HandleWebSocketMessage(message);
+                        await Task.Run(() => HandleWebSocketMessage(message));
                     }
                 }
 
@@ -187,7 +186,7 @@ public abstract class NativeWebSocketClientClientWrapper : IWebSocketClientWrapp
                 _logger.LogError($"Cannot connect to websocket {e.Message}. Attempt #[{_reconnectionCount}]");
             }
 
-            await Task.Delay(_reconnectionDelayMs);
+            await Task.Delay(_reconnectionDelayMs).ConfigureAwait(false);
             _reconnectionCount++;
         }
 

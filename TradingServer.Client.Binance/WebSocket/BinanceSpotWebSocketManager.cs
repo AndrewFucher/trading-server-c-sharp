@@ -13,8 +13,8 @@ namespace TradingServer.Client.Binance.WebSocket;
 /// <inheritdoc />
 public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
 {
-    private readonly IDictionary<EventType, Action<WebSocketEvent>> _callbacks =
-        new ConcurrentDictionary<EventType, Action<WebSocketEvent>>();
+    private readonly IDictionary<EventType, Func<WebSocketEvent, Task>> _callbacks =
+        new ConcurrentDictionary<EventType, Func<WebSocketEvent, Task>>();
 
     private readonly ILogger<BinanceSpotWebSocketManager> _logger;
     private readonly BinanceWebSocketWrapper _binanceWebSocketWrapper;
@@ -37,7 +37,7 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
         _binanceWebSocketWrapper = new BinanceWebSocketWrapper(logger, HandleMessageEvent);
     }
 
-    public IBinanceSpotWebSocketManager AddCallback(EventType key, Action<WebSocketEvent> value)
+    public IBinanceSpotWebSocketManager AddCallback(EventType key, Func<WebSocketEvent, Task> value)
     {
         if (_callbacks.TryGetValue(key, out var action))
             _callbacks[key] += value;
@@ -46,8 +46,8 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
 
         return this;
     }
-    
-    public IBinanceSpotWebSocketManager RemoveCallback(EventType key, Action<WebSocketEvent> value)
+
+    public IBinanceSpotWebSocketManager RemoveCallback(EventType key, Func<WebSocketEvent, Task> value)
     {
         if (_callbacks.ContainsKey(key))
             _callbacks[key] -= value;
@@ -149,7 +149,7 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
         return _subscriptions;
     }
 
-    private void HandleMessageEvent(object? sender, WebSocketMessage webSocketMessage)
+    private async Task HandleMessageEvent(WebSocketMessage webSocketMessage)
     {
         try
         {
@@ -159,7 +159,7 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
             }
             else if (webSocketMessage.Message.Contains("\"e\""))
             {
-                HandleWebSocketEvent(webSocketMessage.Message);
+                await HandleWebSocketEvent(webSocketMessage.Message);
             }
         }
         catch (Exception e)
@@ -174,32 +174,32 @@ public class BinanceSpotWebSocketManager : IBinanceSpotWebSocketManager
         _webSocketResponses.Add(response.Id, response);
     }
 
-    private void HandleWebSocketEvent(string @event)
+    private async Task HandleWebSocketEvent(string @event)
     {
         if (@event.Contains("24hrMiniTicker"))
         {
-            HandleWebSocketMiniTickerEvent(@event);
+            await HandleWebSocketMiniTickerEvent(@event);
         }
     }
 
-    private void HandleWebSocketMiniTickerEvent(string @event)
+    private Task HandleWebSocketMiniTickerEvent(string @event)
     {
         if (!_callbacks.TryGetValue(EventType.MiniTicker24Hour, out var action) || action == null)
         {
             _logger.LogWarning($"No callback specified for event type {EventType.MiniTicker24Hour}");
-            return;
+            return Task.CompletedTask;
         }
 
         if (@event.StartsWith("{"))
         {
             var parsedEvent = JsonConvert.DeserializeObject<MiniTickerWebSocketEvent>(@event)!;
-            action.Invoke(parsedEvent);
-
-            return;
+            return action.Invoke(parsedEvent);
         }
 
         var parsedEvents = JsonConvert.DeserializeObject<IEnumerable<MiniTickerWebSocketEvent>>(@event)!;
-        foreach (var miniTickerWebSocketEvent in parsedEvents)
-            action.Invoke(miniTickerWebSocketEvent);
+        return Task.WhenAll(parsedEvents.Select(v => action.Invoke(v)));
+        // foreach (var miniTickerWebSocketEvent in parsedEvents)
+        //     action.Invoke(miniTickerWebSocketEvent);
+        // return Task.CompletedTask;
     }
 }
